@@ -1,3 +1,4 @@
-const funcGetNotes = require('./notes');
+const getNotes = require('./notes');
+const message = getNotes();
 
-console.log(funcGetNotes());
+console.log(message);
