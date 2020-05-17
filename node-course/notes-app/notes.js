@@ -34,9 +34,22 @@ const listNotes = () => {
     const notes = getNotes();
 
     for(let note of notes) {
-        console.log(`${note.title} - ${note.body}`);
+        const noteTitle = chalk.inverse(note.title);
+        console.log(`${noteTitle} - ${note.body}`);
     }
 };
+
+const readNote = (title) => {
+    const notes = getNotes();
+    const note = notes.find((note) => note.title === title);
+
+    if(note) {
+        const noteTitle = chalk.inverse(note.title);
+        console.log(`${noteTitle} - ${note.body}`);
+    } else {
+        console.log(chalk.bgRed('No note found!!'));
+    }
+}
 
 const getNotes = () => {
     try {
@@ -58,5 +71,6 @@ const saveNotes = (notes) => {
 module.exports = {
     addNote,
     removeNote,
-    listNotes
+    listNotes,
+    readNote
 };
