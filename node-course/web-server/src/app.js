@@ -49,6 +49,20 @@ app.get('/weather', (req, res) => {
     });
 });
 
+app.get('/help/*', (req, res) => {
+    res.render('error', {
+        title: 'Help',
+        message: 'Help article not found'
+    })
+})
+
+app.get('*', (req, res) => {
+    res.render('error', {
+        title: '404',
+        message: 'Page not found'
+    })
+})
+
 app.listen(port, () => {
     console.log(`Express app running on port ${port}.`)
 })
