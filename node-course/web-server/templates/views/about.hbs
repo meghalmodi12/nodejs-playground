@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Home Page</title>
+        <title>About Page</title>
         <link rel="stylesheet" href="/css/styles.css" />
         <script src="/js/client.js"></script>
     </head>
     <body>
-        <h1>{{ pageTitle }}</h1>
+        {{> header}}
+        <img src={{ imgPath }} />
+        {{> footer}}
     </body>
 </html>

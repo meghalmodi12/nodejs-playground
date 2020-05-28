@@ -2,23 +2,42 @@ require('dotenv').config();
 
 const express = require('express');
 const path = require('path');
+const hbs = require('hbs');
 const app = express();
 const port = process.env.PORT || 3000;
-const publicDirectoryPath = path.join(__dirname, '../public');
 
+// Define paths for express config
+const publicDirectoryPath = path.join(__dirname, '../public');
+const viewsPath = path.join(__dirname, '../templates/views');
+const partialsPath = path.join(__dirname, '../templates/partials');
+
+// Set up handlebars engine and views location
 app.set('view engine', 'hbs');
+app.set('views', viewsPath);
+hbs.registerPartials(partialsPath);
+
+// Set up static sirectory to serve
 app.use(express.static(publicDirectoryPath));
 
 app.get('', (req, res) => {
     res.render('index', {
-        pageTitle: 'Home'
+        title: 'Weather',
+        name: 'Meghal Modi'
     });
 });
 
 app.get('/about', (req, res) => {
     res.render('about', {
-        pageTitle: 'About',
-        imgPath: '/img/profile.png'
+        title: 'About',
+        imgPath: '/img/profile.png',
+        name: 'Meghal Modi'
+    });
+});
+
+app.get('/help', (req, res) => {
+    res.render('help', {
+        title: 'Help',
+        name: 'Meghal Modi'
     });
 });
 
