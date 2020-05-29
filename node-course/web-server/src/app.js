@@ -3,6 +3,8 @@ require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const hbs = require('hbs');
+const getGeoCode = require('./utils/geocode');
+const getForecast = require('./utils/forecast');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -41,20 +43,37 @@ app.get('/help', (req, res) => {
     });
 });
 
-app.get('/weather', (req, res) => {
-    res.send({
-        location: 'Edison',
-        condition: 'Sunny',
-        temprature: 23
-    });
-});
-
 app.get('/help/*', (req, res) => {
     res.render('error', {
         title: 'Help',
         message: 'Help article not found'
-    })
-})
+    });
+});
+
+app.get('/weather', (req, res) => {
+    const address = req.query.address;
+    if (!address) {
+       return res.send({ error: 'Please provide a location' });
+    } 
+
+    getGeoCode(address, (error, { latitude, longitude, placeName: location } = {}) => {
+        if (error) {
+            return res.send({error});
+        } 
+
+        getForecast(latitude, longitude, (forecastError, forecastData) => {
+            if (error) {
+                return res.send({ error: forecastError});
+            } 
+
+            return res.send({
+                address,
+                location,
+                forecastData
+            });
+        });
+    });
+});
 
 app.get('*', (req, res) => {
     res.render('error', {
