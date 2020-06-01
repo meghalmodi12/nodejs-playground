@@ -6,7 +6,7 @@ const msgTwo = document.querySelector('#msgTwo');
 weatherForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    fetch(`http://localhost:3000/weather?address=${encodeURIComponent(addressField.value)}`)
+    fetch(`/weather?address=${encodeURIComponent(addressField.value)}`)
     .then(response => response.json())
     .then(data => {
         msgOne.textContent = 'Loading...';
