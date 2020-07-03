@@ -35,6 +35,9 @@ const userSchema = new mongoose.Schema({
             }
         }
     },
+    avatar: {
+        type: Buffer,
+    },
     age:{
         type: Number,
         default: 0,
