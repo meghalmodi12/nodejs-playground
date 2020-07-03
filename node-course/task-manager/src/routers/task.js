@@ -22,12 +22,19 @@ router.get('/tasks', auth, async (req, res) => {
         const query = {
             owner: req.user._id
         };
+        const options = {};
 
         if (req.query.completed) {
             query.completed = req.query.completed === 'true' ? true : false;
         }
+        if (req.query.limit) {
+            options.limit = parseInt(req.query.limit);
+        }
+        if (req.query.skip) {
+            options.skip = parseInt(req.query.skip);
+        }
 
-        const tasks = await Task.find(query);
+        const tasks = await Task.find(query, null, options);
         if (!tasks) {
             return res.status(404).send();
         }
