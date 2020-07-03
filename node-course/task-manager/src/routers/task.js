@@ -17,24 +17,42 @@ router.post('/tasks', auth, async (req, res) => {
     }
 });
 
+/*
+    GET /tasks?completed=true
+    GET /tasks?limit=1&skip=1
+    GET /tasks?sortBy=createdAt:desc
+*/
 router.get('/tasks', auth, async (req, res) => {
     try {
-        const query = {
-            owner: req.user._id
-        };
-        const options = {};
+        const queryObj = {};
+        const projectionObj = {};
+        const optionnObj = {};
 
+        // Required query params
+        queryObj.owner = req.user._id;
+
+        // Oplional query params
         if (req.query.completed) {
-            query.completed = req.query.completed === 'true' ? true : false;
+            queryObj.completed = req.query.completed === 'true' ? true : false;
         }
         if (req.query.limit) {
-            options.limit = parseInt(req.query.limit);
+            optionnObj.limit = parseInt(req.query.limit);
         }
         if (req.query.skip) {
-            options.skip = parseInt(req.query.skip);
+            optionnObj.skip = parseInt(req.query.skip);
+        }
+        if (req.query.sortBy) {
+            const arrSort = [];
+            const tempSort = req.query.sortBy.split(',');
+            tempSort.forEach(elem => {
+                const sortField = elem.split(':')[0];
+                const sortDir = elem.split(':')[1] === 'asc'? 1 : -1;
+                arrSort.push({ [sortField]: sortDir });
+            });
+            optionnObj.sort = arrSort;
         }
 
-        const tasks = await Task.find(query, null, options);
+        const tasks = await Task.find(queryObj, projectionObj, optionnObj);
         if (!tasks) {
             return res.status(404).send();
         }
