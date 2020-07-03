@@ -1,9 +1,8 @@
 const multer = require('multer');
 const express = require('express');
+const router = express.Router();
 const User = require('../models/user');
 const auth = require('../middleware/auth');
-
-const router = express.Router();
 
 router.post('/users', async (req, res) => {
     const user = new User(req.body);
@@ -95,10 +94,26 @@ const uploadAvatar = multer({
 router.post('/users/me/avatar', auth, uploadAvatar.single('avatar'), async (req, res) => {
     req.user.avatar = req.file.buffer;
     await req.user.save();
-    res.status(200).send(req.user);
+    res.status(200).send({ message: 'Avatar upload successfully' });
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message });
 });
+
+router.get('/users/:id/avatar', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).send({ error: 'User profile not found' });
+        }
+        if (!user.avatar) {
+            return res.status(404).send({ error: 'User avatar not found' });
+        }
+        res.set('Content-Type', 'image/png');
+        res.status(200).send(user.avatar);
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
 
 router.delete('/users/me/avatar', auth, async (req, res) => {
     try {
