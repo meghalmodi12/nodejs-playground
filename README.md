@@ -13,3 +13,4 @@ This repository contains following node js applications
 - BCrypt
 - YARGS
 - Postman
+- Multer

@@ -1,7 +1,9 @@
+const multer = require('multer');
 const express = require('express');
-const router = express.Router();
 const User = require('../models/user');
 const auth = require('../middleware/auth');
+
+const router = express.Router();
 
 router.post('/users', async (req, res) => {
     const user = new User(req.body);
@@ -75,6 +77,26 @@ router.delete('/users/me', auth, async (req, res) => {
     } catch (error) {
         res.status(400).send(error);
     }
+});
+
+// Multer configuration for avatar upload route
+const uploadAvatar = multer({
+    dest: 'avatars',
+    limits: {
+        fileSize: 1000000
+    },
+    fileFilter(req, file, callback) {
+        if (!file.originalname.toLowerCase().match(/\.(jpg|jpeg|png)$/)) {
+            return callback(new Error('Please upload an image.'))
+        }
+        callback(undefined, true);
+    }
+});
+
+router.post('/users/me/avatar', uploadAvatar.single('avatar'), (req, res) => {
+    res.send(200);
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message });
 });
 
 module.exports = router;
