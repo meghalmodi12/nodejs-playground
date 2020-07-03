@@ -45,9 +45,8 @@ router.get('/tasks', auth, async (req, res) => {
             const arrSort = [];
             const tempSort = req.query.sortBy.split(',');
             tempSort.forEach(elem => {
-                const sortField = elem.split(':')[0];
-                const sortDir = elem.split(':')[1] === 'asc'? 1 : -1;
-                arrSort.push({ [sortField]: sortDir });
+                const sortParts = elem.split(':');
+                arrSort.push({ [sortParts[0]]: sortParts[1] === 'asc'? 1 : -1 });
             });
             optionnObj.sort = arrSort;
         }
