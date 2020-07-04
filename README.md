@@ -5,12 +5,17 @@ This repository contains following node js applications
 - **Weather App** : This app determines user's current location and provides weather information. It also supports front-end form submission to determine weather information for any location. The app is using [MapBox](https://docs.mapbox.com/) and [WatherStack](https://weatherstack.com/documentation) API in the background.
 - **Task Manager** : An app that can be used to track todo items. It supports user privacy via authentication tokens. The app also supports multiple login feature. The app is using MongoDB as backend.
 
-### Tech stck
+### Tech Stack
 - Node JS
 - MongoDB
+
+### NPM Modules
 - JWT
+- Mongoose
 - Socket IO
 - BCrypt
 - YARGS
 - Postman
 - Multer
+- Sharp
+- SendGrid
