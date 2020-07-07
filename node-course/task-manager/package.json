@@ -24,6 +24,9 @@
     "dev": "env-cmd -f ./config/dev.env nodemon src/index.js",
     "test": "jest --watch"
   },
+  "jest": {
+    "testEnvironment": "node"
+  },
   "author": "",
   "license": "ISC"
 }
