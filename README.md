@@ -8,6 +8,7 @@ This repository contains following node js applications
 ### Tech Stack
 - Node JS
 - MongoDB
+- Express
 
 ### NPM Modules
 - JWT
@@ -19,3 +20,5 @@ This repository contains following node js applications
 - Multer
 - Sharp
 - SendGrid
+- ENV-CMD
+- Supertest
