@@ -16,9 +16,16 @@ io.on('connection', (socket) => {
     console.log('New websocket connection');
 
     socket.emit('message', 'Welcome');
+    // Sending message to every client except newly connected client
+    socket.broadcast.emit('message', 'A new user has joined')
 
     socket.on('sendMessage', (message) => {
         io.emit('message', message);
+    });
+
+    socket.on('disconnect', () =>{
+        // Since user has already disconnected, we are not using socket.broadcast.emit
+        io.emit('message', 'A user has left');
     });
 })
 
