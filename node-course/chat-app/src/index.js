@@ -23,6 +23,10 @@ io.on('connection', (socket) => {
         io.emit('message', message);
     });
 
+    socket.on('sendLocation', (coords) => {
+        io.emit('message', `https://google.com/maps?q=${coords.latitude},${coords.longitude}` );
+    });
+
     socket.on('disconnect', () =>{
         // Since user has already disconnected, we are not using socket.broadcast.emit
         io.emit('message', 'A user has left');
