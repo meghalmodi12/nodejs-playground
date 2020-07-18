@@ -35,33 +35,43 @@ io.on('connection', (socket) => {
 
         // Join room
         socket.join(user.room);
-        socket.emit('message', generateMessage('Welcome'));
-        socket.broadcast.to(room).emit('message', generateMessage(`${user.username} has joined`));
+        socket.emit('message', generateMessage('admin', 'Welcome'));
+        socket.broadcast.to(user.room).emit('message', generateMessage('admin', `${user.username} has joined`));
         callback();
     }); 
 
     socket.on('sendMessage', (message, callback) => {
-        const filter = new Filter();
+        const user = getUser(socket.id);
+        if (!user) {
+            return callback('User not found');
+        } else {
+            const filter = new Filter();
 
-        // Check for sanity
-        if (filter.isProfane(message)) {
-            return callback('Profanity is not allowed!')
+            // Check for sanity
+            if (filter.isProfane(message)) {
+                return callback('Profanity is not allowed!')
+            }
+
+            io.to(user.room).emit('message', generateMessage(user.username, message));
+            callback();
         }
-
-        io.emit('message', generateMessage(message));
-        callback();
     });
 
     socket.on('sendLocation', (coords, callback) => {
-        io.emit('locationMessage', generateLocationMessage(coords));
-        callback();
+        const user = getUser(socket.id);
+        if (!user) {
+            return callback('User not found');
+        } else {
+            io.emit('locationMessage', generateLocationMessage(user.username, coords));
+            callback();
+        } 
     });
 
     socket.on('disconnect', () =>{
         const user = removeUser(socket.id);
         if (user) {
             // Since user has already disconnected, we are not using socket.broadcast.emit
-            io.to(user.room).emit('message', generateMessage(`${user.username} has left`));
+            io.to(user.room).emit('message', generateMessage('admin', `${user.username} has left`));
         }
     });
 })
