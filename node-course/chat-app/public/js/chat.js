@@ -1,6 +1,7 @@
 const socket = io();
 
 // Elements
+const $sidebar = document.querySelector('#sidebar');
 const $messages = document.querySelector('#messages');
 const $messageForm = document.querySelector('#message-form');
 const $messageFormInput = document.querySelector('#txtMessage');
@@ -10,15 +11,45 @@ const $locationBtn = document.querySelector('#send-location');
 // Templates
 const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationMessageTemplate = document.querySelector('#locationMessage-template').innerHTML;
+const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML;
 
 // Options
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true });
+
+const autoScroll = () => {
+    // Last message element
+    const $lastMessage = $messages.lastElementChild;
+    const lastMessageStyles = getComputedStyle($lastMessage);
+    const lastMessageMargin = parseInt(lastMessageStyles.marginBottom);
+    const lastMessageHeight = $lastMessage.offsetHeight + lastMessageMargin;
+
+    // Visible height
+    const visibleHeight = $messages.offsetHeight;
+
+    // Height of messages container
+    const containerHeight = $messages.scrollHeight;
+
+    // How far we have scrolled already
+    const scrollOffset = $messages.scrollTop + visibleHeight;
+
+    if (containerHeight - lastMessageHeight <= scrollOffset) {
+        $messages.scrollTop = $messages.scrollHeight;
+    }
+};
 
 socket.emit('join', { username, room }, (error) => {
     if (error) {
         alert(error);
         location.href = '/';
     }
+});
+
+socket.on('roomData', ({ room, users }) => {
+    const html = Mustache.render(sidebarTemplate, {
+        room,
+        users
+    });
+    $sidebar.innerHTML = html;
 });
 
 socket.on('message', (message) => {
@@ -30,6 +61,7 @@ socket.on('message', (message) => {
         createdAt: moment(message.createdAt).format('h:mm a') 
     });
     $messages.insertAdjacentHTML('beforeend', html);
+    autoScroll();
 }); 
 
 socket.on('locationMessage', (locationMessage) => {
@@ -41,6 +73,7 @@ socket.on('locationMessage', (locationMessage) => {
         createdAt: moment(locationMessage.createdAt).format('h:mm a') 
     });
     $messages.insertAdjacentHTML('beforeend', html);
+    autoScroll();
 });
 
 $messageForm.addEventListener('submit', (event) => {

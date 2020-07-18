@@ -37,6 +37,13 @@ io.on('connection', (socket) => {
         socket.join(user.room);
         socket.emit('message', generateMessage('admin', 'Welcome'));
         socket.broadcast.to(user.room).emit('message', generateMessage('admin', `${user.username} has joined`));
+
+        // Send refreshed users list
+        io.to(user.room).emit('roomData', {
+            room: user.room,
+            users: getUsersInRoom(user.room)
+        });
+
         callback();
     }); 
 
@@ -72,6 +79,11 @@ io.on('connection', (socket) => {
         if (user) {
             // Since user has already disconnected, we are not using socket.broadcast.emit
             io.to(user.room).emit('message', generateMessage('admin', `${user.username} has left`));
+            // Send refreshed users list
+            io.to(user.room).emit('roomData', {
+                room: user.room,
+                users: getUsersInRoom(user.room)
+            });
         }
     });
 })
