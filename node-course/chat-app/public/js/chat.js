@@ -1,11 +1,11 @@
 const socket = io();
 
 // Elements
-const $messages = document.querySelector('#divMessages');
+const $messages = document.querySelector('#messages');
 const $messageForm = document.querySelector('#message-form');
 const $messageFormInput = document.querySelector('#txtMessage');
 const $messageFormButton = $messageForm.querySelector('button');
-const $locationBtn = document.querySelector('#btnSendLoc');
+const $locationBtn = document.querySelector('#send-location');
 
 // Templates
 const messageTemplate = document.querySelector('#message-template').innerHTML;
