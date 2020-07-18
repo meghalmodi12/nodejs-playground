@@ -11,6 +11,11 @@ const $locationBtn = document.querySelector('#send-location');
 const messageTemplate = document.querySelector('#message-template').innerHTML;
 const locationMessageTemplate = document.querySelector('#locationMessage-template').innerHTML;
 
+// Options
+const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true });
+
+socket.emit('join', { username, room });
+
 socket.on('message', (message) => {
     console.log(message);
 

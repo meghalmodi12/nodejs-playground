@@ -14,12 +14,25 @@ const pathToPublicDirectory = path.join(__dirname, '../public');
 
 app.use(express.static(pathToPublicDirectory));
 
+/**
+ * SOCKET.IO - Summary
+ * socket.emit - send message to a specific client address
+ * io.emit - send message to all the clients
+ * socket.broadcast.emit - send message to all the client, except the current
+ * io.to(room).emit - send message to all the clients connected to the room
+ * socket.broadcast.to.emit - send message to all the client connected to the room, except the current
+ * socket.join - Join specific chat room
+*/
 io.on('connection', (socket) => {
     console.log('New websocket connection');
 
-    socket.emit('message', generateMessage('Welcome'));
-    // Sending message to every client except newly connected client
-    socket.broadcast.emit('message', generateMessage('A new user has joined'));
+    socket.on('join', ({ username, room }) => {
+        // Join room
+        socket.join(room);
+
+        socket.emit('message', generateMessage('Welcome'));
+        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined`));
+    }); 
 
     socket.on('sendMessage', (message, callback) => {
         const filter = new Filter();
