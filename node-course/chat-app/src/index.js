@@ -4,6 +4,7 @@ const express = require('express');
 const socketio = require('socket.io');
 const Filter = require('bad-words');
 const { generateMessage, generateLocationMessage } = require('./utils/messages');
+const { addUser, removeUser, getUser, getUsersInRoom } = require('./utils/users');
 
 const app = express();
 const server = http.createServer(app);
@@ -26,12 +27,17 @@ app.use(express.static(pathToPublicDirectory));
 io.on('connection', (socket) => {
     console.log('New websocket connection');
 
-    socket.on('join', ({ username, room }) => {
-        // Join room
-        socket.join(room);
+    socket.on('join', ({ username, room }, callback) => {
+        const { error, user } = addUser({ id: socket.id, username, room});
+        if (error) {
+            callback(error);
+        }
 
+        // Join room
+        socket.join(user.room);
         socket.emit('message', generateMessage('Welcome'));
-        socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined`));
+        socket.broadcast.to(room).emit('message', generateMessage(`${user.username} has joined`));
+        callback();
     }); 
 
     socket.on('sendMessage', (message, callback) => {
@@ -52,8 +58,11 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () =>{
-        // Since user has already disconnected, we are not using socket.broadcast.emit
-        io.emit('message', generateMessage('A user has left'));
+        const user = removeUser(socket.id);
+        if (user) {
+            // Since user has already disconnected, we are not using socket.broadcast.emit
+            io.to(user.room).emit('message', generateMessage(`${user.username} has left`));
+        }
     });
 })
 
